@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.bit.hbly.mappers.memberMapper">
+
+<!-- 회원 가입 -->
+<insert id="signup">
+	insert into tbl_member (userId,userPassword,userName,userBirth,userGender,userNickname,userPhoneNumber,userAddress1,userAddress2,userAddress3,login_Type) 
+	values(#{userId},#{userPassword},#{userName},#{userBirth},#{userGender},#{userNickname},#{userPhoneNumber},#{userAddress1},#{userAddress2},#{userAddress3}, #{login_Type})
+
+</insert>
+
+<!-- 회원 가입 - 아이디(email) 중복 검사 -->
+<select id="checkId" parameterType="String" resultType="int">
+	select count(*) from tbl_member where userId = #{userId}
+</select>
+
+<!-- 회원 가입 - 별명 중복 검사 -->
+<select id="checkNickname" parameterType="String" resultType="int">
+	select count(*) from tbl_member where userNickname = #{userNickname}
+</select>
+
+
+<insert id="getAuthorities">
+ insert into tbl_AUTHORITIES (userId,AUTHORITY) values(#{userId},'ROLE_USER')
+</insert>
+
+
+<!-- 로그인 -->
+<select id="signin" resultType="edu.bit.hbly.vo.MemberVO">
+ select
+     userId,userPassword,userName,userBirth,userGender,userNickname,userPhoneNumber,userAddress1,userAddress2,userAddress3, userRegidate, verify
+ from
+     tbl_member
+ where userId = #{userId}
+</select>
+
+<!-- 회원정보 수정-->
+<update id="modify">
+ update tbl_member set 
+ userPassword=#{userPassword}, userNickname=#{userNickname}, userAddress1=#{userAddress1}, userAddress2=#{userAddress2}, userAddress3=#{userAddress3} 
+ where userId=#{userId}
+</update>
+
+<!-- 회원 탈퇴 -->
+<delete id="withdrawal">
+ delete from tbl_member where userId = #{userId} and userPassword = #{userPassword}
+</delete>
+
+<delete id="withdrawalAuthority">
+delete from tbl_authorities where userId = #{userId}
+</delete>
+
+<!-- 로그인 - 아이디 찾기/비밀번호 찾기-->
+<select id="checkNamePhoneNumber" parameterType="String" resultType="edu.bit.hbly.vo.MemberVO">
+ select
+     userId, userRegidate
+ from
+     tbl_member
+ where userName = #{userName} and userPhoneNumber = #{userPhoneNumber}
+</select>
+
+<!-- 비밀번호 찾기 - 비밀번호 수정-->
+<update id="pwInqurySuccess" parameterType="String">
+ update tbl_member set 
+ userPassword=#{userPassword}
+ where userId=#{userId}
+</update>
+
+</mapper>
